@@ -1,14 +1,17 @@
 package com.example.taxiapp;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -54,6 +57,37 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
+        if (connectionResult.hasResolution()) {
+            try {
+                connectionResult.startResolutionForResult(MainActivity.this, REQEST_CODE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            Toast.makeText(MainActivity.this, "google play service is not working !", Toast.LENGTH_LONG).show();
+            finish();
+        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQEST_CODE && resultCode == RESULT_OK) {
+
+            googleApiClient.connect();
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
     }
 
     //custom methods
@@ -73,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 double longitude = location.getLongitude();
 
                 txtLocation.setText(latitude + " - " + longitude);
-            }else {
+            } else {
                 txtLocation.setText("The app is not able to access the location now");
             }
 
