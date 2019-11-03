@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderApi;
 import com.google.android.gms.location.LocationServices;
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -29,9 +30,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        txtLocation=findViewById(R.id.txtLocation);
+        txtLocation = findViewById(R.id.txtLocation);
 
-        googleApiClient= new GoogleApiClient.Builder(MainActivity.this)
+        googleApiClient = new GoogleApiClient.Builder(MainActivity.this)
                 .addConnectionCallbacks(MainActivity.this)
                 .addOnConnectionFailedListener(MainActivity.this)
                 .addApi(LocationServices.API).build();
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onConnected(Bundle bundle) {
 
+        showLocation();
     }
 
     @Override
@@ -56,19 +58,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     //custom methods
 
-    private void showLocatioan(){
+    private void showLocation() {
 
-        int permissionCheck= ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION);
 
-        if(permissionCheck== PackageManager.PERMISSION_GRANTED){
+        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+
+            FusedLocationProviderApi fusedLocationProviderApi = LocationServices.FusedLocationApi;
+
+            location = fusedLocationProviderApi.getLastLocation(googleApiClient);
+
+            if (location != null) {
+                double latitude = location.getLatitude();
+                double longitude = location.getLongitude();
+
+                txtLocation.setText(latitude + " - " + longitude);
+            }else {
+                txtLocation.setText("The app is not able to access the location now");
+            }
 
 
-
-
-
-        }else {
+        } else {
             txtLocation.setText("The app is not allowed to access location");
-            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
 
     }
