@@ -21,7 +21,7 @@ import com.google.android.gms.location.LocationServices;
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String TAG = "TAG";
-    private static final int REQEST_CODE = 1000;
+    private static final int REQUEST_CODE = 1000;
 
     private GoogleApiClient googleApiClient;
     private Location location;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         if (connectionResult.hasResolution()) {
             try {
-                connectionResult.startResolutionForResult(MainActivity.this, REQEST_CODE);
+                connectionResult.startResolutionForResult(MainActivity.this, REQUEST_CODE);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
 
             googleApiClient.connect();
         }
